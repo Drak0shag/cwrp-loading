@@ -90,11 +90,11 @@
 	var wsDone = 0;
 	var wsTotal = 0;
 
-	// Сервер стартует со стоковой карты и сам уходит на Анаксес (sv_cwrp_startmap.lua).
+	// Сервер стартует со стоковой карты и сам уходит на rp_anaxes (sv_cwrp_startmap.lua).
 	var MAP_NAMES = {
-		"rp_anaxes_v2-5": "Анаксес",
-		"gm_construct": "Анаксес",
-		"gm_flatgrass": "Анаксес"
+		"rp_anaxes_v2-5": "Anaxes",
+		"gm_construct": "Anaxes",
+		"gm_flatgrass": "Anaxes"
 	};
 
 	function el(id) { return document.getElementById(id); }
@@ -163,6 +163,7 @@
 			["Requesting Lua", "Загрузка скриптов сервера"],
 			["Mounting Addons", "Подключение аддонов"],
 			["Starting Lua", "Запуск скриптов"],
+			["Lua Started!", "Скрипты запущены"],
 			["Retrieving server info", "Получение информации о сервере"],
 			["Loading", "Загрузка"]
 		];
