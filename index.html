@@ -87,10 +87,30 @@
 
 	var total = 0;
 	var needed = 0;
+	var wsDone = 0;
+	var wsTotal = 0;
+
+	// Сервер стартует со стоковой карты и сам уходит на Анаксес (sv_cwrp_startmap.lua).
+	var MAP_NAMES = {
+		"rp_anaxes_v2-5": "Анаксес",
+		"gm_construct": "Анаксес",
+		"gm_flatgrass": "Анаксес"
+	};
 
 	function el(id) { return document.getElementById(id); }
 
+	function setBar(pct) {
+		el("track").className = "";
+		el("fill").style.width = pct + "%";
+		el("pct").innerHTML = pct + "%";
+	}
+
 	function updateProgress() {
+		if (total <= 0 && wsTotal > 0) {
+			setBar(Math.min(100, Math.floor(wsDone / wsTotal * 100)));
+			return;
+		}
+
 		if (total <= 0) {
 			el("track").className = "idle";
 			el("pct").innerHTML = "";
@@ -98,17 +118,13 @@
 		}
 
 		var done = Math.max(0, total - needed);
-		var pct = Math.min(100, Math.floor(done / total * 100));
-
-		el("track").className = "";
-		el("fill").style.width = pct + "%";
-		el("pct").innerHTML = pct + "%";
+		setBar(Math.min(100, Math.floor(done / total * 100)));
 	}
 
 	function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
 		if (servername) { el("server").innerHTML = servername; }
 		var parts = [];
-		if (mapname) { parts.push(mapname); }
+		if (mapname) { parts.push(MAP_NAMES[mapname] || mapname); }
 		if (maxplayers) { parts.push("до " + maxplayers + " игроков"); }
 		el("meta").innerHTML = parts.join("  ·  ");
 	}
@@ -123,6 +139,23 @@
 
 	function SetStatusChanged(status) {
 		var s = String(status || "");
+
+		// Workshop: "66/149 (12.8 GB total) - Downloaded! 'Lord Tyler's - Massive Prop Pack'"
+		var ws = /^(\d+)\/(\d+)\s*\(([^)]*?)\s*total\)\s*-\s*(.*)$/.exec(s);
+		if (ws) {
+			wsDone = parseInt(ws[1], 10);
+			wsTotal = parseInt(ws[2], 10);
+			var size = ws[3].replace("GB", "ГБ").replace("MB", "МБ").replace("KB", "КБ");
+			var rest = ws[4]
+				.replace(/^Downloaded!\s*/, "")
+				.replace(/^Downloading\s*/, "")
+				.replace(/^Mounting\s*/, "")
+				.replace(/^'(.*)'$/, "$1");
+			el("status").innerHTML = "Workshop: " + wsDone + " из " + wsTotal + " (" + size + ")" + (rest ? "  ·  " + rest : "");
+			updateProgress();
+			return;
+		}
+
 		var map = [
 			["Workshop Complete", "Workshop-контент готов"],
 			["Sending client info", "Отправка данных клиента"],
