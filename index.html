@@ -21,33 +21,6 @@
 	@-webkit-keyframes drift { from { -webkit-transform: scale(1.0); } to { -webkit-transform: scale(1.06); } }
 	@keyframes drift { from { transform: scale(1.0); } to { transform: scale(1.06); } }
 
-	#shade {
-		position: absolute; left: 0; right: 0; bottom: 0; height: 17%; min-height: 120px;
-		background: -webkit-linear-gradient(top, rgba(15,15,18,0) 0%, rgba(15,15,18,0.88) 55%, rgba(15,15,18,0.96) 100%);
-		background: linear-gradient(to bottom, rgba(15,15,18,0) 0%, rgba(15,15,18,0.88) 55%, rgba(15,15,18,0.96) 100%);
-	}
-
-	#info { position: absolute; left: 48px; right: 48px; bottom: 22px; }
-	#brand { font-size: 13px; letter-spacing: 4px; color: #FF7A00; font-weight: bold; }
-	#server { font-size: 18px; margin-top: 2px; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	#meta { font-size: 12px; color: #8C8C96; margin-top: 2px; letter-spacing: 1px; }
-
-	#status { margin-top: 8px; font-size: 13px; color: #C8C8D0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 70px; }
-	#pct { position: absolute; right: 0; bottom: 14px; font-size: 13px; color: #FF7A00; font-weight: bold; }
-
-	#track { position: relative; margin-top: 8px; height: 4px; background: #16161A; overflow: hidden; }
-	#fill {
-		position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
-		background: #FF7A00; box-shadow: 0 0 10px rgba(255,122,0,0.8);
-		-webkit-transition: width 0.4s ease; transition: width 0.4s ease;
-	}
-	#track.idle #fill {
-		width: 30%;
-		-webkit-animation: idle 1.6s ease-in-out infinite; animation: idle 1.6s ease-in-out infinite;
-	}
-	@-webkit-keyframes idle { from { left: -30%; } to { left: 100%; } }
-	@keyframes idle { from { left: -30%; } to { left: 100%; } }
-
 	#hint { position: absolute; right: 48px; top: 28px; font-size: 12px; color: rgba(232,232,236,0.55); text-align: right; }
 </style>
 </head>
@@ -59,18 +32,7 @@
 	<div class="slide" style="background-image: url('img/5.jpg');"></div>
 	<div class="slide" style="background-image: url('img/6.jpg');"></div>
 
-	<div id="shade"></div>
 	<div id="hint">Первый вход дольше обычного — контент скачивается один раз</div>
-
-	<!-- Живой прогресс поверх макета Figma (статика % в кадрах закрыта shade). -->
-	<div id="info">
-		<div id="brand">ЗАГРУЗКА</div>
-		<div id="server">MAGIC REPUBLIC | Clone Wars RP</div>
-		<div id="meta"></div>
-		<div id="status">Подключение к серверу…</div>
-		<div id="pct"></div>
-		<div id="track" class="idle"><div id="fill"></div></div>
-	</div>
 
 <script>
 	var slides = document.getElementsByClassName("slide");
@@ -88,93 +50,12 @@
 		show(current);
 	}, 7000);
 
-	var total = 0;
-	var needed = 0;
-	var wsDone = 0;
-	var wsTotal = 0;
-
-	// Сервер стартует со стоковой карты и сам уходит на rp_anaxes (sv_cwrp_startmap.lua).
-	var MAP_NAMES = {
-		"rp_anaxes_v2-5": "Anaxes",
-		"gm_construct": "Anaxes",
-		"gm_flatgrass": "Anaxes"
-	};
-
-	function el(id) { return document.getElementById(id); }
-
-	function setBar(pct) {
-		el("track").className = "";
-		el("fill").style.width = pct + "%";
-		el("pct").innerHTML = pct + "%";
-	}
-
-	function updateProgress() {
-		if (total <= 0 && wsTotal > 0) {
-			setBar(Math.min(100, Math.floor(wsDone / wsTotal * 100)));
-			return;
-		}
-
-		if (total <= 0) {
-			el("track").className = "idle";
-			el("pct").innerHTML = "";
-			return;
-		}
-
-		var done = Math.max(0, total - needed);
-		setBar(Math.min(100, Math.floor(done / total * 100)));
-	}
-
-	function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode) {
-		if (servername) { el("server").innerHTML = servername; }
-		var parts = [];
-		if (mapname) { parts.push(MAP_NAMES[mapname] || mapname); }
-		if (maxplayers) { parts.push("до " + maxplayers + " игроков"); }
-		el("meta").innerHTML = parts.join("  ·  ");
-	}
-
-	function SetFilesTotal(n) { total = n; updateProgress(); }
-	function SetFilesNeeded(n) { needed = n; updateProgress(); }
-
-	function DownloadingFile(fileName) {
-		var name = String(fileName || "").split("/").pop();
-		el("status").innerHTML = "Скачивание: " + name;
-	}
-
-	function SetStatusChanged(status) {
-		var s = String(status || "");
-
-		// Workshop: "66/149 (12.8 GB total) - Downloaded! 'Lord Tyler's - Massive Prop Pack'"
-		var ws = /^(\d+)\/(\d+)\s*\(([^)]*?)\s*total\)\s*-\s*(.*)$/.exec(s);
-		if (ws) {
-			wsDone = parseInt(ws[1], 10);
-			wsTotal = parseInt(ws[2], 10);
-			var size = ws[3].replace("GB", "ГБ").replace("MB", "МБ").replace("KB", "КБ");
-			var rest = ws[4]
-				.replace(/^Downloaded!\s*/, "")
-				.replace(/^Downloading\s*/, "")
-				.replace(/^Mounting\s*/, "")
-				.replace(/^'(.*)'$/, "$1");
-			el("status").innerHTML = "Workshop: " + wsDone + " из " + wsTotal + " (" + size + ")" + (rest ? "  ·  " + rest : "");
-			updateProgress();
-			return;
-		}
-
-		var map = [
-			["Workshop Complete", "Workshop-контент готов"],
-			["Sending client info", "Отправка данных клиента"],
-			["Client info sent", "Данные клиента отправлены"],
-			["Requesting Lua", "Загрузка скриптов сервера"],
-			["Mounting Addons", "Подключение аддонов"],
-			["Starting Lua", "Запуск скриптов"],
-			["Lua Started!", "Скрипты запущены"],
-			["Retrieving server info", "Получение информации о сервере"],
-			["Loading", "Загрузка"]
-		];
-		for (var i = 0; i < map.length; i++) {
-			if (s.indexOf(map[i][0]) === 0) { s = map[i][1] + s.substring(map[i][0].length); break; }
-		}
-		el("status").innerHTML = s;
-	}
+	// GMod вызывает эти хуки — оставляем no-op, чтобы не падать.
+	function GameDetails() {}
+	function SetFilesTotal() {}
+	function SetFilesNeeded() {}
+	function DownloadingFile() {}
+	function SetStatusChanged() {}
 </script>
 </body>
 </html>
