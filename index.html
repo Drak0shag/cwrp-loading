@@ -21,7 +21,64 @@
 	@-webkit-keyframes drift { from { -webkit-transform: scale(1.0); } to { -webkit-transform: scale(1.06); } }
 	@keyframes drift { from { transform: scale(1.0); } to { transform: scale(1.06); } }
 
-	#hint { position: absolute; right: 48px; top: 28px; font-size: 12px; color: rgba(232,232,236,0.55); text-align: right; }
+	/* Figma 1495:42 — % + полоса слева снизу (1920×1080: x80 · barW520 · y1004) */
+	#progress {
+		position: absolute;
+		left: 4.1667%;
+		bottom: 6.3%;
+		width: 27.083%;
+		max-width: 520px;
+		pointer-events: none;
+		z-index: 5;
+	}
+	#pct {
+		font-size: 18px;
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		color: rgba(255, 255, 255, 0.92);
+		margin: 0 0 12px 0;
+		line-height: 1;
+	}
+	#bar {
+		position: relative;
+		width: 100%;
+		height: 2px;
+		background: rgba(255, 255, 255, 0.12);
+		overflow: hidden;
+	}
+	#fill {
+		position: absolute; left: 0; top: 0; bottom: 0;
+		width: 0%;
+		background: #FF7956;
+		-webkit-transition: width 0.2s linear; transition: width 0.2s linear;
+	}
+	#fill.indeterminate {
+		width: 28%;
+		-webkit-transition: none; transition: none;
+		-webkit-animation: sweep 1.6s ease-in-out infinite;
+		animation: sweep 1.6s ease-in-out infinite;
+	}
+	@-webkit-keyframes sweep {
+		0%   { left: -28%; }
+		100% { left: 100%; }
+	}
+	@keyframes sweep {
+		0%   { left: -28%; }
+		100% { left: 100%; }
+	}
+
+	#hint {
+		position: absolute; right: 48px; top: 28px;
+		font-size: 12px; color: rgba(232,232,236,0.55); text-align: right;
+		z-index: 5;
+	}
+	#status {
+		position: absolute; left: 4.1667%; bottom: 3.2%;
+		width: 50%; max-width: 640px;
+		font-size: 12px; color: rgba(232,232,236,0.45);
+		white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+		z-index: 5; pointer-events: none;
+	}
 </style>
 </head>
 <body>
@@ -32,16 +89,58 @@
 	<div class="slide" style="background-image: url('img/5.jpg');"></div>
 	<div class="slide" style="background-image: url('img/6.jpg');"></div>
 
+	<div id="progress">
+		<div id="pct">0 %</div>
+		<div id="bar"><div id="fill" class="indeterminate"></div></div>
+	</div>
+	<div id="status"></div>
 	<div id="hint">Первый вход дольше обычного — контент скачивается один раз</div>
 
 <script>
 	var slides = document.getElementsByClassName("slide");
 	var current = 0;
+	var total = 0;
+	var needed = 0;
+	var hasFileProgress = false;
+	var pctEl = document.getElementById("pct");
+	var fillEl = document.getElementById("fill");
+	var statusEl = document.getElementById("status");
+	var shown = -1;
 
 	function show(i) {
 		for (var k = 0; k < slides.length; k++) {
 			slides[k].className = (k === i) ? "slide on" : "slide";
 		}
+	}
+
+	function setPct(n) {
+		n = Math.max(0, Math.min(100, Math.floor(n)));
+		if (n === shown) return;
+		shown = n;
+		pctEl.innerHTML = n + " %";
+		fillEl.style.width = n + "%";
+	}
+
+	function setDeterminate(on) {
+		if (on) {
+			fillEl.className = "";
+			fillEl.style.left = "0";
+		} else {
+			fillEl.className = "indeterminate";
+			fillEl.style.width = "28%";
+			pctEl.innerHTML = "…";
+			shown = -1;
+		}
+	}
+
+	function refreshFromFiles() {
+		if (!hasFileProgress || total <= 0) {
+			setDeterminate(false);
+			return;
+		}
+		setDeterminate(true);
+		var done = Math.max(0, total - needed);
+		setPct((done / total) * 100);
 	}
 
 	show(0);
@@ -50,12 +149,47 @@
 		show(current);
 	}, 7000);
 
-	// GMod вызывает эти хуки — оставляем no-op, чтобы не падать.
-	function GameDetails() {}
-	function SetFilesTotal() {}
-	function SetFilesNeeded() {}
-	function DownloadingFile() {}
-	function SetStatusChanged() {}
+	/* GMod loadingurl hooks — must be on window */
+	window.GameDetails = function (servername, serverurl, mapname) {
+		if (servername) document.title = servername;
+		if (mapname) statusEl.innerHTML = mapname;
+	};
+
+	window.SetFilesTotal = function (t) {
+		total = parseInt(t, 10) || 0;
+		if (total > 0) hasFileProgress = true;
+		refreshFromFiles();
+	};
+
+	window.SetFilesNeeded = function (n) {
+		needed = parseInt(n, 10) || 0;
+		if (total > 0) hasFileProgress = true;
+		refreshFromFiles();
+	};
+
+	window.DownloadingFile = function (fileName) {
+		if (fileName) statusEl.innerHTML = fileName;
+	};
+
+	window.SetStatusChanged = function (status) {
+		if (!status) return;
+		statusEl.innerHTML = status;
+		/* Workshop / фазы без SetFiles* — не оставляем полоску мёртвой */
+		var m = String(status).match(/(\d+)\s*%/);
+		if (m) {
+			hasFileProgress = true;
+			setDeterminate(true);
+			setPct(parseInt(m[1], 10));
+			return;
+		}
+		if (/starting lua|sending client|workshop complete|clean ?up/i.test(status)) {
+			hasFileProgress = true;
+			setDeterminate(true);
+			setPct(100);
+			return;
+		}
+		if (!hasFileProgress) setDeterminate(false);
+	};
 </script>
 </body>
 </html>
