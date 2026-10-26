@@ -11,15 +11,12 @@
 		position: absolute; left: 0; top: 0; width: 100%; height: 100%;
 		background-position: center; background-size: cover; background-repeat: no-repeat;
 		opacity: 0;
-		-webkit-transition: opacity 1.6s ease; transition: opacity 1.6s ease;
-		-webkit-transform: scale(1.0); transform: scale(1.0);
+		-webkit-transition: opacity 1.4s ease; transition: opacity 1.4s ease;
+		/* без Ken Burns — зум мылил JPEG и текст */
 	}
 	.slide.on {
 		opacity: 1;
-		-webkit-animation: drift 9s linear forwards; animation: drift 9s linear forwards;
 	}
-	@-webkit-keyframes drift { from { -webkit-transform: scale(1.0); } to { -webkit-transform: scale(1.06); } }
-	@keyframes drift { from { transform: scale(1.0); } to { transform: scale(1.06); } }
 
 	/* Figma 1495:42 — % + полоса слева снизу (1920×1080: x80 · barW520 · y1004) */
 	#progress {
@@ -82,12 +79,12 @@
 </style>
 </head>
 <body>
-	<div class="slide" style="background-image: url('img/1.jpg');"></div>
-	<div class="slide" style="background-image: url('img/2.jpg');"></div>
-	<div class="slide" style="background-image: url('img/3.jpg');"></div>
-	<div class="slide" style="background-image: url('img/4.jpg');"></div>
-	<div class="slide" style="background-image: url('img/5.jpg');"></div>
-	<div class="slide" style="background-image: url('img/6.jpg');"></div>
+	<div class="slide" style="background-image: url('img/1.jpg?v=4k95');"></div>
+	<div class="slide" style="background-image: url('img/2.jpg?v=4k95');"></div>
+	<div class="slide" style="background-image: url('img/3.jpg?v=4k95');"></div>
+	<div class="slide" style="background-image: url('img/4.jpg?v=4k95');"></div>
+	<div class="slide" style="background-image: url('img/5.jpg?v=4k95');"></div>
+	<div class="slide" style="background-image: url('img/6.jpg?v=4k95');"></div>
 
 	<div id="progress">
 		<div id="pct">0 %</div>
