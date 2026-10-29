@@ -4,21 +4,7 @@
 <meta charset="utf-8">
 <title>MAGIC REPUBLIC</title>
 <style>
-	@font-face {
-		font-family: "Inter";
-		font-weight: 400;
-		font-style: normal;
-		src: url("fonts/Inter-Regular.woff2") format("woff2");
-	}
-	@font-face {
-		font-family: "Inter";
-		font-weight: 600;
-		font-style: normal;
-		src: url("fonts/Inter-SemiBold.woff2") format("woff2");
-	}
-
 	html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #05080c; }
-	body { font-family: "Inter", "Segoe UI", Tahoma, Arial, sans-serif; color: #F4F3F0; }
 
 	.slide {
 		position: absolute; left: 0; top: 0; width: 100%; height: 100%;
@@ -37,149 +23,22 @@
 		background-color: #05080c;
 		background-position: center; background-size: cover; background-repeat: no-repeat;
 	}
-
-	/* Figma 1677:109 — контраст текста + атмосферное затемнение */
-	.grad-x, .grad-y {
-		position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none;
-	}
-	.grad-x {
-		background: -webkit-linear-gradient(left,
-			rgba(5, 8, 12, 0.922) 0%,
-			rgba(5, 8, 12, 0.667) 26%,
-			rgba(5, 8, 12, 0.094) 65%,
-			rgba(5, 8, 12, 0.031) 100%);
-		background: linear-gradient(90deg,
-			rgba(5, 8, 12, 0.922) 0%,
-			rgba(5, 8, 12, 0.667) 26%,
-			rgba(5, 8, 12, 0.094) 65%,
-			rgba(5, 8, 12, 0.031) 100%);
-	}
-	.grad-y {
-		background: -webkit-linear-gradient(top,
-			rgba(5, 8, 12, 0.439) 0%,
-			rgba(5, 8, 12, 0) 25%,
-			rgba(5, 8, 12, 0.078) 55%,
-			rgba(5, 8, 12, 0.78) 82%,
-			rgba(5, 8, 12, 0.961) 100%);
-		background: linear-gradient(180deg,
-			rgba(5, 8, 12, 0.439) 0%,
-			rgba(5, 8, 12, 0) 25%,
-			rgba(5, 8, 12, 0.078) 55%,
-			rgba(5, 8, 12, 0.78) 82%,
-			rgba(5, 8, 12, 0.961) 100%);
-	}
-
-	.fact {
-		position: absolute;
-		left: 4.1667%;
-		top: 51.3%;
-		width: 54.7%;
-		max-width: 1050px;
-		z-index: 2;
-	}
-	.fact h1 {
-		margin: 0;
-		font-weight: 600;
-		font-size: 88px;
-		line-height: 1.06;
-		color: #F4F3F0;
-		letter-spacing: -0.01em;
-	}
-	.fact p {
-		margin: 24px 0 0 0;
-		max-width: 890px;
-		font-weight: 400;
-		font-size: 26px;
-		line-height: 1.5;
-		color: #C1C6CA;
-	}
-
-	#hint {
-		position: absolute; right: 48px; top: 28px;
-		font-size: 12px; color: rgba(232,232,236,0.55); text-align: right;
-		z-index: 5;
-	}
 </style>
 </head>
 <body>
-	<!-- Figma 1677:109 · сцены 4K · текст HTML · без status/progress (Workshop filename убран) -->
-	<div class="slide" data-src="img/1.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>Оби-Ван Кеноби</h1>
-			<p>Во время Войн клонов Оби-Ван Кеноби командовал 212-м штурмовым батальоном вместе с командиром Коди.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/2.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>Энакин Скайуокер</h1>
-			<p>Энакин Скайуокер был генералом Республики и возглавлял 501-й легион. Во время войны его падаваном стала Асока Тано.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/3.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>Капитан Рекс</h1>
-			<p>Рекс служил в 501-м легионе под командованием Энакина Скайуокера. Его отличали синие отметины на броне и два бластерных пистолета DC-17.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/4.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>Командир Коди</h1>
-			<p>Коди, известный под обозначением CC-2224, командовал 212-м штурмовым батальоном и служил под началом Оби-Вана Кеноби.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/5.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>501-й легион</h1>
-			<p>Солдаты 501-го легиона носили синие отметины на броне. Под командованием Энакина Скайуокера они участвовали в битве за Умбару.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/6.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>212-й батальон</h1>
-			<p>212-й штурмовой батальон участвовал в сражении на Утапау. Его бойцов можно узнать по оранжевым отметинам на белой броне.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/7.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>DC-15A</h1>
-			<p>Длинноствольная бластерная винтовка DC-15A входила в вооружение солдат-клонов Великой армии Республики.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/8.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>DC-17</h1>
-			<p>Бластерными пистолетами DC-17 пользовались офицеры и ARC-солдаты. Капитан Рекс предпочитал сражаться с парой таких пистолетов.</p>
-		</div>
-	</div>
-	<div class="slide" data-src="img/9.jpg?v=1677hq2">
-		<div class="scene"></div>
-		<div class="grad-x"></div><div class="grad-y"></div>
-		<div class="fact">
-			<h1>Световой меч</h1>
-			<p>Кайбер-кристалл — сердце светового меча. Джедаи использовали это оружие не только для атаки, но и для отражения бластерных выстрелов.</p>
-		</div>
-	</div>
-
-	<div id="hint">Первый вход дольше обычного — контент скачивается один раз</div>
+	<!-- Чистые баннеры Figma 1677:109 · без текста / градиентов / progress -->
+	<div class="slide" data-src="img/1.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/2.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/3.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/4.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/5.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/6.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/7.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/8.jpg?v=1677hq3"><div class="scene"></div></div>
+	<div class="slide" data-src="img/9.jpg?v=1677hq3"><div class="scene"></div></div>
 
 <script>
-	/* GMod loadingurl: setInterval часто спит — крутим слайды из колбэков движка + запасной таймер. */
+	/* GMod loadingurl: setInterval часто спит — крутим из колбэков движка. */
 	var slides = document.getElementsByClassName("slide");
 	var current = 0;
 	var SLIDE_MS = 6500;
@@ -194,7 +53,6 @@
 		var scene = el.getElementsByClassName("scene")[0];
 		if (scene) scene.style.backgroundImage = "url('" + src + "')";
 		loaded[i] = true;
-		/* прогрев следующего */
 		var n = (i + 1) % slides.length;
 		if (!loaded[n]) {
 			var img = new Image();
@@ -225,11 +83,8 @@
 	}
 
 	show(0);
-
-	/* запасной тик (в CEF иногда живёт) */
 	setInterval(function () { maybeAdvance(false); }, 1000);
 
-	/* основной привод — хуки GMod дергаются часто при скачивании */
 	window.GameDetails = function (servername) {
 		if (servername) document.title = servername;
 		maybeAdvance(false);
