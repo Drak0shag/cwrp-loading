@@ -12,21 +12,9 @@
 	}
 	@font-face {
 		font-family: "Inter";
-		font-weight: 500;
-		font-style: normal;
-		src: url("fonts/Inter-Medium.woff2") format("woff2");
-	}
-	@font-face {
-		font-family: "Inter";
 		font-weight: 600;
 		font-style: normal;
 		src: url("fonts/Inter-SemiBold.woff2") format("woff2");
-	}
-	@font-face {
-		font-family: "Roboto Mono";
-		font-weight: 400;
-		font-style: normal;
-		src: url("fonts/RobotoMono-Regular.woff2") format("woff2");
 	}
 
 	html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #05080c; }
@@ -35,21 +23,31 @@
 	.slide {
 		position: absolute; left: 0; top: 0; width: 100%; height: 100%;
 		opacity: 0;
-		-webkit-transition: opacity 1.4s ease; transition: opacity 1.4s ease;
+		-webkit-transition: opacity 1.2s ease; transition: opacity 1.2s ease;
 		pointer-events: none;
+		z-index: 0;
 	}
-	.slide.on { opacity: 1; }
+	.slide.on {
+		opacity: 1;
+		z-index: 1;
+	}
 
 	.scene {
-		position: absolute; inset: 0;
+		position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+		background-color: #05080c;
 		background-position: center; background-size: cover; background-repeat: no-repeat;
 	}
 
 	/* Figma 1677:109 — контраст текста + атмосферное затемнение */
 	.grad-x, .grad-y {
-		position: absolute; inset: 0; pointer-events: none;
+		position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none;
 	}
 	.grad-x {
+		background: -webkit-linear-gradient(left,
+			rgba(5, 8, 12, 0.922) 0%,
+			rgba(5, 8, 12, 0.667) 26%,
+			rgba(5, 8, 12, 0.094) 65%,
+			rgba(5, 8, 12, 0.031) 100%);
 		background: linear-gradient(90deg,
 			rgba(5, 8, 12, 0.922) 0%,
 			rgba(5, 8, 12, 0.667) 26%,
@@ -57,6 +55,12 @@
 			rgba(5, 8, 12, 0.031) 100%);
 	}
 	.grad-y {
+		background: -webkit-linear-gradient(top,
+			rgba(5, 8, 12, 0.439) 0%,
+			rgba(5, 8, 12, 0) 25%,
+			rgba(5, 8, 12, 0.078) 55%,
+			rgba(5, 8, 12, 0.78) 82%,
+			rgba(5, 8, 12, 0.961) 100%);
 		background: linear-gradient(180deg,
 			rgba(5, 8, 12, 0.439) 0%,
 			rgba(5, 8, 12, 0) 25%,
@@ -65,7 +69,6 @@
 			rgba(5, 8, 12, 0.961) 100%);
 	}
 
-	/* Факт: left 80/1920 · top 554/1080 · title 88 · body 26 · gap 24 */
 	.fact {
 		position: absolute;
 		left: 4.1667%;
@@ -77,65 +80,18 @@
 	.fact h1 {
 		margin: 0;
 		font-weight: 600;
-		font-size: clamp(36px, 4.583vw, 88px);
+		font-size: 88px;
 		line-height: 1.06;
 		color: #F4F3F0;
 		letter-spacing: -0.01em;
 	}
 	.fact p {
-		margin: clamp(12px, 1.25vw, 24px) 0 0 0;
+		margin: 24px 0 0 0;
 		max-width: 890px;
 		font-weight: 400;
-		font-size: clamp(15px, 1.354vw, 26px);
+		font-size: 26px;
 		line-height: 1.5;
 		color: #C1C6CA;
-	}
-
-	/* Прогресс — под текстом, слева снизу (1920: x80 · w520 · bar ~y1004) */
-	#progress {
-		position: absolute;
-		left: 4.1667%;
-		bottom: 6.3%;
-		width: 27.083%;
-		max-width: 520px;
-		pointer-events: none;
-		z-index: 5;
-	}
-	#pct {
-		font-size: clamp(14px, 0.94vw, 18px);
-		font-weight: 400;
-		letter-spacing: 0.02em;
-		color: rgba(244, 243, 240, 0.92);
-		margin: 0 0 12px 0;
-		line-height: 1;
-	}
-	#bar {
-		position: relative;
-		width: 100%;
-		height: 2px;
-		background: rgba(255, 255, 255, 0.12);
-		overflow: hidden;
-		border-radius: 1px;
-	}
-	#fill {
-		position: absolute; left: 0; top: 0; bottom: 0;
-		width: 0%;
-		background: #FF7956;
-		-webkit-transition: width 0.2s linear; transition: width 0.2s linear;
-	}
-	#fill.indeterminate {
-		width: 28%;
-		-webkit-transition: none; transition: none;
-		-webkit-animation: sweep 1.6s ease-in-out infinite;
-		animation: sweep 1.6s ease-in-out infinite;
-	}
-	@-webkit-keyframes sweep {
-		0%   { left: -28%; }
-		100% { left: 100%; }
-	}
-	@keyframes sweep {
-		0%   { left: -28%; }
-		100% { left: 100%; }
 	}
 
 	#hint {
@@ -143,83 +99,76 @@
 		font-size: 12px; color: rgba(232,232,236,0.55); text-align: right;
 		z-index: 5;
 	}
-	#status {
-		position: absolute; left: 4.1667%; bottom: 3.2%;
-		width: 50%; max-width: 640px;
-		font-size: 12px; color: rgba(232,232,236,0.45);
-		white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-		z-index: 5; pointer-events: none;
-	}
 </style>
 </head>
 <body>
-	<!-- Figma 1677:109 · сцены Real-ESRGAN ×4 → 3840×2160 JPEG q95 · текст HTML (не baked) -->
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/1.jpg?v=1677hq');"></div>
+	<!-- Figma 1677:109 · сцены 4K · текст HTML · без status/progress (Workshop filename убран) -->
+	<div class="slide" data-src="img/1.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>Оби-Ван Кеноби</h1>
 			<p>Во время Войн клонов Оби-Ван Кеноби командовал 212-м штурмовым батальоном вместе с командиром Коди.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/2.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/2.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>Энакин Скайуокер</h1>
 			<p>Энакин Скайуокер был генералом Республики и возглавлял 501-й легион. Во время войны его падаваном стала Асока Тано.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/3.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/3.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>Капитан Рекс</h1>
 			<p>Рекс служил в 501-м легионе под командованием Энакина Скайуокера. Его отличали синие отметины на броне и два бластерных пистолета DC-17.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/4.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/4.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>Командир Коди</h1>
 			<p>Коди, известный под обозначением CC-2224, командовал 212-м штурмовым батальоном и служил под началом Оби-Вана Кеноби.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/5.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/5.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>501-й легион</h1>
 			<p>Солдаты 501-го легиона носили синие отметины на броне. Под командованием Энакина Скайуокера они участвовали в битве за Умбару.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/6.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/6.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>212-й батальон</h1>
 			<p>212-й штурмовой батальон участвовал в сражении на Утапау. Его бойцов можно узнать по оранжевым отметинам на белой броне.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/7.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/7.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>DC-15A</h1>
 			<p>Длинноствольная бластерная винтовка DC-15A входила в вооружение солдат-клонов Великой армии Республики.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/8.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/8.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>DC-17</h1>
 			<p>Бластерными пистолетами DC-17 пользовались офицеры и ARC-солдаты. Капитан Рекс предпочитал сражаться с парой таких пистолетов.</p>
 		</div>
 	</div>
-	<div class="slide">
-		<div class="scene" style="background-image:url('img/9.jpg?v=1677hq');"></div>
+	<div class="slide" data-src="img/9.jpg?v=1677hq2">
+		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
 			<h1>Световой меч</h1>
@@ -227,105 +176,68 @@
 		</div>
 	</div>
 
-	<div id="progress">
-		<div id="pct">0 %</div>
-		<div id="bar"><div id="fill" class="indeterminate"></div></div>
-	</div>
-	<div id="status"></div>
 	<div id="hint">Первый вход дольше обычного — контент скачивается один раз</div>
 
 <script>
+	/* GMod loadingurl: setInterval часто спит — крутим слайды из колбэков движка + запасной таймер. */
 	var slides = document.getElementsByClassName("slide");
 	var current = 0;
-	var total = 0;
-	var needed = 0;
-	var hasFileProgress = false;
-	var pctEl = document.getElementById("pct");
-	var fillEl = document.getElementById("fill");
-	var statusEl = document.getElementById("status");
-	var shown = -1;
+	var SLIDE_MS = 6500;
+	var lastSlideAt = 0;
+	var loaded = {};
+
+	function ensureBg(i) {
+		var el = slides[i];
+		if (!el || loaded[i]) return;
+		var src = el.getAttribute("data-src");
+		if (!src) return;
+		var scene = el.getElementsByClassName("scene")[0];
+		if (scene) scene.style.backgroundImage = "url('" + src + "')";
+		loaded[i] = true;
+		/* прогрев следующего */
+		var n = (i + 1) % slides.length;
+		if (!loaded[n]) {
+			var img = new Image();
+			img.onload = function () {
+				var nel = slides[n];
+				if (!nel || loaded[n]) return;
+				var ns = nel.getElementsByClassName("scene")[0];
+				if (ns) ns.style.backgroundImage = "url('" + nel.getAttribute("data-src") + "')";
+				loaded[n] = true;
+			};
+			img.src = slides[n].getAttribute("data-src");
+		}
+	}
 
 	function show(i) {
+		ensureBg(i);
 		for (var k = 0; k < slides.length; k++) {
 			slides[k].className = (k === i) ? "slide on" : "slide";
 		}
+		current = i;
+		lastSlideAt = +new Date();
 	}
 
-	function setPct(n) {
-		n = Math.max(0, Math.min(100, Math.floor(n)));
-		if (n === shown) return;
-		shown = n;
-		pctEl.innerHTML = n + " %";
-		fillEl.style.width = n + "%";
-	}
-
-	function setDeterminate(on) {
-		if (on) {
-			fillEl.className = "";
-			fillEl.style.left = "0";
-		} else {
-			fillEl.className = "indeterminate";
-			fillEl.style.width = "28%";
-			pctEl.innerHTML = "…";
-			shown = -1;
-		}
-	}
-
-	function refreshFromFiles() {
-		if (!hasFileProgress || total <= 0) {
-			setDeterminate(false);
-			return;
-		}
-		setDeterminate(true);
-		var done = Math.max(0, total - needed);
-		setPct((done / total) * 100);
+	function maybeAdvance(force) {
+		var now = +new Date();
+		if (!force && lastSlideAt && (now - lastSlideAt) < SLIDE_MS) return;
+		show((current + 1) % slides.length);
 	}
 
 	show(0);
-	setInterval(function () {
-		current = (current + 1) % slides.length;
-		show(current);
-	}, 7000);
 
-	window.GameDetails = function (servername, serverurl, mapname) {
+	/* запасной тик (в CEF иногда живёт) */
+	setInterval(function () { maybeAdvance(false); }, 1000);
+
+	/* основной привод — хуки GMod дергаются часто при скачивании */
+	window.GameDetails = function (servername) {
 		if (servername) document.title = servername;
-		if (mapname) statusEl.innerHTML = mapname;
+		maybeAdvance(false);
 	};
-
-	window.SetFilesTotal = function (t) {
-		total = parseInt(t, 10) || 0;
-		if (total > 0) hasFileProgress = true;
-		refreshFromFiles();
-	};
-
-	window.SetFilesNeeded = function (n) {
-		needed = parseInt(n, 10) || 0;
-		if (total > 0) hasFileProgress = true;
-		refreshFromFiles();
-	};
-
-	window.DownloadingFile = function (fileName) {
-		if (fileName) statusEl.innerHTML = fileName;
-	};
-
-	window.SetStatusChanged = function (status) {
-		if (!status) return;
-		statusEl.innerHTML = status;
-		var m = String(status).match(/(\d+)\s*%/);
-		if (m) {
-			hasFileProgress = true;
-			setDeterminate(true);
-			setPct(parseInt(m[1], 10));
-			return;
-		}
-		if (/starting lua|sending client|workshop complete|clean ?up/i.test(status)) {
-			hasFileProgress = true;
-			setDeterminate(true);
-			setPct(100);
-			return;
-		}
-		if (!hasFileProgress) setDeterminate(false);
-	};
+	window.SetFilesTotal = function () { maybeAdvance(false); };
+	window.SetFilesNeeded = function () { maybeAdvance(false); };
+	window.DownloadingFile = function () { maybeAdvance(false); };
+	window.SetStatusChanged = function () { maybeAdvance(false); };
 </script>
 </body>
 </html>
