@@ -84,8 +84,8 @@
 </style>
 </head>
 <body>
-	<!-- UHD 4K 3840×2160 q100 · Real-ESRGAN plates · HTML text 1:1 Figma · без progress -->
-	<div class="slide" data-src="img/1.jpg?v=16774k">
+	<!-- Слайды: не вешать background, пока Image не onload — иначе GMod CEF рисует JPG «частями» по сети. -->
+	<div class="slide" data-src="img/1.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -93,7 +93,7 @@
 			<p>Во время Войн клонов Оби-Ван Кеноби командовал 212-м штурмовым батальоном вместе с командиром Коди.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/2.jpg?v=16774k">
+	<div class="slide" data-src="img/2.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -101,7 +101,7 @@
 			<p>Энакин Скайуокер был генералом Республики и возглавлял 501-й легион. Во время войны его падаваном стала Асока Тано.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/3.jpg?v=16774k">
+	<div class="slide" data-src="img/3.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -109,7 +109,7 @@
 			<p>Рекс служил в 501-м легионе под командованием Энакина Скайуокера. Его отличали синие отметины на броне и два бластерных пистолета DC-17.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/4.jpg?v=16774k">
+	<div class="slide" data-src="img/4.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -117,7 +117,7 @@
 			<p>Коди, известный под обозначением CC-2224, командовал 212-м штурмовым батальоном и служил под началом Оби-Вана Кеноби.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/5.jpg?v=16774k">
+	<div class="slide" data-src="img/5.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -125,7 +125,7 @@
 			<p>Солдаты 501-го легиона носили синие отметины на броне. Под командованием Энакина Скайуокера они участвовали в битве за Умбару.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/6.jpg?v=16774k">
+	<div class="slide" data-src="img/6.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -133,7 +133,7 @@
 			<p>212-й штурмовой батальон участвовал в сражении на Утапау. Его бойцов можно узнать по оранжевым отметинам на белой броне.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/7.jpg?v=16774k">
+	<div class="slide" data-src="img/7.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -141,7 +141,7 @@
 			<p>Длинноствольная бластерная винтовка DC-15A входила в вооружение солдат-клонов Великой армии Республики.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/8.jpg?v=16774k">
+	<div class="slide" data-src="img/8.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -149,7 +149,7 @@
 			<p>Бластерными пистолетами DC-17 пользовались офицеры и ARC-солдаты. Капитан Рекс предпочитал сражаться с парой таких пистолетов.</p>
 		</div>
 	</div>
-	<div class="slide" data-src="img/9.jpg?v=16774k">
+	<div class="slide" data-src="img/9.jpg?v=1677gate">
 		<div class="scene"></div>
 		<div class="grad-x"></div><div class="grad-y"></div>
 		<div class="fact">
@@ -159,50 +159,90 @@
 	</div>
 
 <script>
-	/* GMod loadingurl: setInterval часто спит — крутим из колбэков движка. */
+	/* GMod loadingurl: setInterval часто спит — крутим из колбэков движка.
+	   Картинку на экран — только после полного download+decode (иначе «плитки» по HTTP). */
 	var slides = document.getElementsByClassName("slide");
 	var current = 0;
 	var SLIDE_MS = 6500;
 	var lastSlideAt = 0;
-	var loaded = {};
+	var ready = {};
+	var inflight = {};
+	var pendingShow = -1;
 
-	function ensureBg(i) {
+	function applyBg(i) {
 		var el = slides[i];
-		if (!el || loaded[i]) return;
-		var src = el.getAttribute("data-src");
-		if (!src) return;
+		if (!el) return;
 		var scene = el.getElementsByClassName("scene")[0];
-		if (scene) scene.style.backgroundImage = "url('" + src + "')";
-		loaded[i] = true;
-		var n = (i + 1) % slides.length;
-		if (!loaded[n]) {
-			var img = new Image();
-			img.onload = function () {
-				var nel = slides[n];
-				if (!nel || loaded[n]) return;
-				var ns = nel.getElementsByClassName("scene")[0];
-				if (ns) ns.style.backgroundImage = "url('" + nel.getAttribute("data-src") + "')";
-				loaded[n] = true;
-			};
-			img.src = slides[n].getAttribute("data-src");
-		}
+		var src = el.getAttribute("data-src");
+		if (scene && src) scene.style.backgroundImage = "url('" + src + "')";
 	}
 
-	function show(i) {
-		ensureBg(i);
+	function prefetch(i) {
+		i = ((i % slides.length) + slides.length) % slides.length;
+		if (ready[i] || inflight[i]) return;
+		var src = slides[i].getAttribute("data-src");
+		if (!src) return;
+		inflight[i] = true;
+		var img = new Image();
+		img.onload = function () {
+			ready[i] = true;
+			inflight[i] = false;
+			applyBg(i);
+			if (pendingShow === i) {
+				pendingShow = -1;
+				reveal(i);
+			}
+			/* держим в кэше следующий + ещё один */
+			prefetch(i + 1);
+			prefetch(i + 2);
+		};
+		img.onerror = function () {
+			inflight[i] = false;
+			/* не блокируем ротацию навечно — пустой dark scene */
+			ready[i] = true;
+			if (pendingShow === i) {
+				pendingShow = -1;
+				reveal(i);
+			}
+			prefetch(i + 1);
+		};
+		img.src = src;
+	}
+
+	function reveal(i) {
 		for (var k = 0; k < slides.length; k++) {
 			slides[k].className = (k === i) ? "slide on" : "slide";
 		}
 		current = i;
 		lastSlideAt = +new Date();
+		prefetch(i + 1);
+		prefetch(i + 2);
+	}
+
+	function show(i) {
+		i = ((i % slides.length) + slides.length) % slides.length;
+		if (ready[i]) {
+			reveal(i);
+			return;
+		}
+		pendingShow = i;
+		prefetch(i);
 	}
 
 	function maybeAdvance(force) {
 		var now = +new Date();
 		if (!force && lastSlideAt && (now - lastSlideAt) < SLIDE_MS) return;
-		show((current + 1) % slides.length);
+		var next = (current + 1) % slides.length;
+		/* не переключаемся на недогруженный кадр — ждём onload */
+		if (!ready[next]) {
+			prefetch(next);
+			return;
+		}
+		show(next);
 	}
 
+	prefetch(0);
+	prefetch(1);
 	show(0);
 	setInterval(function () { maybeAdvance(false); }, 1000);
 
